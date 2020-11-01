@@ -1,5 +1,7 @@
+
 const base_url = "https://api.football-data.org/v2/";
-const url_team = "teams/";
+const url_team = `${base_url}teams/`;
+const url_standings = `${base_url}competitions/2021/standings`;
 const fetchAPI = (url) => {
   return fetch(url, {
     method: "GET",
@@ -36,7 +38,7 @@ const error = (error) => {
 // Blok kode untuk melakukan request data json
 function getTeams() {
   if ("caches" in window) {
-    caches.match(base_url + "teams").then((response) => {
+    caches.match(url_team).then((response) => {
       if (response) {
         response.json().then((data) => {
           let articlesHTML = "";
@@ -46,7 +48,7 @@ function getTeams() {
                   <div class="card">
                     <a href="./article.html?id=${team.id}">
                       <div class="card-image waves-effect waves-block waves-black">
-                        <img src="${team.crestUrl}" />
+                        <img alt="logo-football-team" src="${team.crestUrl.replace(/^http:\/\//i, 'https://')}" />
                       </div>
                     </a>
                     <div class="divider"></div>
@@ -66,7 +68,7 @@ function getTeams() {
     });
   }
 
-  fetchAPI(base_url + url_team)
+  fetchAPI(url_team )
     .then(status)
     .then(json)
     .then((data) => {
@@ -80,7 +82,7 @@ function getTeams() {
               <div class="card">
                 <a href="./article.html?id=${team.id}">
                   <div class="card-image waves-effect waves-block waves-black">
-                    <img src="${team.crestUrl}" />
+                    <img alt="logo-football-team" src="${team.crestUrl.replace(/^http:\/\//i, 'https://')}" />
                   </div>
                 </a>
                 <div class="divider"></div>
@@ -115,7 +117,7 @@ function getTeamsById() {
             <div class="container">
             <div class="card">
             <div class="row">
-                <img class="col s12 m6"src="${data.crestUrl}" />
+                <img alt="logo-football-team" class="col s12 m6"src="${data.crestUrl.replace(/^http:\/\//i, 'https://')}" />
             <div class="card-content col s12 m6">
                 <h4>${data.name}</h4>
                 <div class="divider"></div>
@@ -157,7 +159,7 @@ function getTeamsById() {
         <div class="container">
         <div class="card">
         <div class="row">
-            <img class="col s12 m6"src="${data.crestUrl}" />
+            <img alt="logo-football-team" class="col s12 m6"src="${data.crestUrl.replace(/^http:\/\//i, 'https://')}" />
         <div class="card-content col s12 m6">
             <h4>${data.name}</h4>
             <div class="divider"></div>
@@ -185,7 +187,7 @@ function getTeamsById() {
   });
 }
 
-function getYourFavoriTeam() {
+function getYourFavoritTeam() {
   getAll().then(function(teams) {
     console.log(teams);
     // Menyusun komponen card artikel secara dinamis
@@ -195,9 +197,9 @@ function getYourFavoriTeam() {
       articlesHTML += `
       <div class="container">
             <div class="card">
-              <a href="./article.html?id=${team.id}">
+              <a href="./article.html?id=${team.id}&saved=true">
                 <div class="card-image waves-effect waves-block waves-black">
-                  <img src="${team.crestUrl}" />
+                  <img alt="logo-football-team" src="${team.crestUrl.replace(/^http:\/\//i, 'https://')}" />
                 </div>
               </a>
               <div class="divider"></div>
@@ -221,13 +223,13 @@ function getSavedTeamById() {
 
   getById(parseInt(idParam))
   .then((team) => {
-    articleHTML = '';
-    let articleHTML = `
+    let articleHTML = '';
+    articleHTML = `
     <h3 class="center"> About the Team </h3>
     <div class="container">
     <div class="card">
     <div class="row">
-        <img class="col s12 m6"src="${teamrestUrl}" />
+        <img alt="logo-football-team" class="col s12 m6" src="${team.crestUrl.replace(/^http:\/\//i, 'https://')}"/>
     <div class="card-content col s12 m6">
         <h4>${team.name}</h4>
         <div class="divider"></div>
@@ -250,4 +252,56 @@ function getSavedTeamById() {
     // Sisipkan komponen card ke dalam elemen dengan id #content
     document.getElementById("body-content").innerHTML = articleHTML;
   });
+}
+
+
+function getAllStandings() {
+  if ("caches" in window) {
+    caches.match(url_standings).then((response) => {
+      if (response) {
+        response.json().then((data) => {
+          const topTeam = data.standings[0];
+          let articlesHTML = "";
+          topTeam.table.forEach((standing) => {
+            articlesHTML += `
+            <tr>
+                <td class="center-align"> ${standing.position} </td>
+                <td> ${standing.team.name}</td>
+                <td class="center-align">${standing.won} </td>
+                <td class="center-align">${standing.lost} </td>
+                <td class="center-align"> ${standing.draw}</td>
+            </tr>
+                `;
+          });
+          // Sisipkan komponen card ke dalam elemen dengan id #content
+          document.getElementById("standing-team").innerHTML = articlesHTML;
+        });
+      }
+    });
+  }
+
+  fetchAPI(url_standings)
+    .then(status)
+    .then(json)
+    .then((data) => {
+      // Objek/array JavaScript dari response.json() masuk lewat data.
+
+      // Menyusun komponen card artikel secara dinamis
+      const topTeam = data.standings[0];
+      let articlesHTML = "";
+      topTeam.table.forEach((standing) => {
+        articlesHTML += `
+        <tr>
+            <td class="center"> ${standing.position} </td>
+            <td>${standing.team.name}</td>
+            <td class="center">${standing.won} </td>
+            <td class="center">${standing.lost} </td>
+            <td class="center"> ${standing.draw}</td>
+        </tr>
+            `;
+      });
+      // Sisipkan komponen card ke dalam elemen dengan id #content
+      document.getElementById("standing-team").innerHTML = articlesHTML;
+    })
+    .catch(error);
 }

@@ -19,6 +19,7 @@ function saveTeamLater(team) {
     })
     .then(function() {
       console.log("Data Tim berhasil di simpan.");
+      M.toast({ html: 'Data tim berhasil disimpan', classes: 'blue rounded' });
     });
 }
 
@@ -50,4 +51,20 @@ function getById(id) {
             });
     });
 
+}
+
+
+function deleteTeam(team) {
+    dbPromised
+        .then(function (db) {
+            let tx = db.transaction("teams", "readwrite");
+            let store = tx.objectStore("teams");
+            store.delete(team);
+            console.log(team);
+            return tx.complete;
+        })
+        .then(function () {
+            console.log("Data Tim berhasil dihapus");
+            M.toast({ html: 'Data tim berhasil dihapus', classes: 'red rounded' });
+          });
 }

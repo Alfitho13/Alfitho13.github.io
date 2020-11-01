@@ -1,16 +1,24 @@
 {
-    "name": "My First PWA",
-    "short_name": "My PWA",
-    "description": "Aplikasi PWA pertama saya",
+    "name": "Aye Football",
+    "short_name": "Aye Ball",
+    "description": "Aplikasi tentang bola",
     "start_url": "/index.html",
     "display": "standalone",
-    "background_color": "#00897B",
-    "theme_color": "#00897B",
+    "background_color": "#FFFFFF",
+    "theme_color": "#000000",
+    "gcm_sender_id": "407548188376",
     "icons": [
         {
-            "src": "icon.png",
+            "src": "/icons/icon512.png",
             "sizes": "512x512",
-            "type": "image/png"
+            "type": "image/png",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "/icons/icon192.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "any maskable"
         }
     ]
 }

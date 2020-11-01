@@ -29,6 +29,22 @@ workbox.precaching.precacheAndRoute([
 
 ]);
 
+workbox.routing.registerRoute(
+    new RegExp('https://api.football-data.org/v2/'),
+    workbox.strategies.staleWhileRevalidate({
+            cacheName : "url-api",
+            cacheableResponse:{
+                statuses: [0,200],
+            },
+            plugins : [
+            new workbox.expiration.Plugin({
+                maxAgeSeconds: 60 * 60 * 24 * 365,
+                maxEntries: 30,
+            }),
+          ]
+    })
+);
+
 
 workbox.routing.registerRoute(
   new RegExp('/pages/'),
